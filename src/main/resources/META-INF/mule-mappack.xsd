@@ -74,6 +74,22 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="to-list" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specifies if the output should be a list containing the map instead.
+                            By default this is false.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="skip-top" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specifies if the output should NOT merge the top level mapping.
+                            By default this is false.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

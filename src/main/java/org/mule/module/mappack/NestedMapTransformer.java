@@ -19,8 +19,10 @@ import org.mule.module.mappack.i18n.MapPackMessages;
 import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.util.TemplateParser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NestedMapTransformer extends AbstractMessageTransformer
 {
@@ -29,6 +31,8 @@ public class NestedMapTransformer extends AbstractMessageTransformer
     private Boolean trimToLength = false;
     private Boolean addSpace = false;
     private Boolean singleMap = false;
+    private Boolean toList = false;
+    private Boolean skipTop = false;
 
     protected final TemplateParser.PatternInfo patternInfo = TemplateParser.createMuleStyleParser().getStyle();
 
@@ -100,7 +104,23 @@ public class NestedMapTransformer extends AbstractMessageTransformer
         	}
         }
         
-        return outmap;
+        if (!skipTop) {
+        	// Move over the ones initially mapped to null
+        	HashMap<String, HashMap> nullmap = tempmap.get(null);
+        	if (nullmap != null) {
+        		outmap.putAll(nullmap);
+        	}
+        }
+        
+        // Note: return is in an if-else block
+        if (toList) {
+        	ArrayList<Map<String,Object>> outlist = new ArrayList<Map<String,Object>>();
+        	outlist.add((Map) outmap);
+        	return outlist;
+        } else 
+        {
+        	return outmap;
+        }
     }
 
 
@@ -154,13 +174,39 @@ public class NestedMapTransformer extends AbstractMessageTransformer
     	this.singleMap = singleMap;
     }
     
+    public Boolean getToList()
+    {
+    	return toList;
+    }
+    
+    public void setToList(Boolean toList)
+    {
+    	this.toList = toList;
+    }
+    
+    public Boolean getSkipTop()
+    {
+    	return skipTop;
+    }
+    
+    public void setSkipTop(Boolean skipTop)
+    {
+    	this.skipTop = skipTop;
+    }
+    
 	@SuppressWarnings(value = "unchecked")
 	private void constructNestedMap(String parentName, String childName, HashMap<String, HashMap> tempmap, HashMap<String, HashMap> outmap)
 			throws TransformerException {
+		
 		HashMap<String, HashMap> childmap = (HashMap<String, HashMap>) tempmap
 				.get(childName);
 		
 		if (childmap == null)
+			// Maybe created during the ordering part?
+			childmap = (HashMap<String, HashMap>) outmap.get(childName);
+		
+		if (childmap == null)
+			// Still not found
 			throw new TransformerException(MapPackMessages.noChildDefined());
 		
 		if (parentName != null) {
