@@ -1,1 +1,1 @@
-http\://www.mulesoft.org/schema/mule/datapack=org.mule.module.datapack.config.DataPackNamespaceHandler
+http\://www.mulesoft.org/schema/mule/mappack=org.mule.module.mappack.config.MapPackNamespaceHandler

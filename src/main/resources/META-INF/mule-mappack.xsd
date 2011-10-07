@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesoft.org/schema/mule/mappack"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+            xmlns:schemadoc="http://www.mulesoft.org/schema/mule/schemadoc"
+            targetNamespace="http://www.mulesoft.org/schema/mule/mappack"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
+                schemaLocation="http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc"
+                schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/3.2/mule-schemadoc.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation>Provides transformation to nested maps for use with MOM-based cloud connectors.</xsd:documentation>
+        <xsd:appinfo>
+            <schemadoc:short-name>mappack</schemadoc:short-name>
+            <schemadoc:page-title>mappack Module</schemadoc:page-title>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+
+    <xsd:element name="nested-map-transformer" type="NestedMapType"
+                 substitutionGroup="mule:abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                Based upon the configuration generate variables of nested maps.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="NestedMapType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractTransformerType">
+                <xsd:sequence>
+                    <xsd:element ref="abstract-mapvalue" minOccurs="1" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation>
+								Key-Value pair configuration.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element ref="abstract-maporder" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation>
+								nesting configuration.  ordering is important.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="trim-to-length" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specifies if the mapvalues should be trimed to the length specified in the mapvalue definition.
+                            By default this is false.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="add-space" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specifies if the mapvalues should contain one space character when the value is null.
+                            By default this is false.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="single-map" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specifies if the mapvalues should contain in one single map.
+                            If true, mapnames and maporders will be ignored.
+                            By default this is false.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+
+    <xsd:element name="abstract-mapvalue" type="abstractmapvalueType" />
+    <xsd:complexType name="abstractmapvalueType" />
+
+    <xsd:element name="mapvalue" type="mapvalueType" substitutionGroup="abstract-mapvalue" />
+    <xsd:complexType name="mapvalueType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractmapvalueType">
+                <xsd:attribute name="map-key" type="xsd:string" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Name of the key to the value.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="map-name" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Name of the map to put key-value pair in.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="length" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            When used with fixed width output this specifies the length of the field.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="value" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The value that will be used to set the mapvalue.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="default-value" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="date-time-mapvalue" type="dateTimemapvalueType" substitutionGroup="abstract-mapvalue" />
+
+    <xsd:complexType name="dateTimemapvalueType">
+        <xsd:complexContent>
+            <xsd:extension base="mapvalueType">
+                <xsd:attribute name="date-format-in" type="xsd:string" use="required">
+
+                </xsd:attribute>
+                <xsd:attribute name="date-format-out" type="xsd:string" use="required">
+
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="transform-mapvalue" type="transformmapvalueType" substitutionGroup="abstract-mapvalue" />
+
+    <xsd:complexType name="transformmapvalueType">
+        <xsd:complexContent>
+            <xsd:extension base="mapvalueType">
+                <xsd:attribute name="transformer-name" type="xsd:string" use="required">
+
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+
+    <xsd:element name="abstract-maporder" type="abstractmaporderType" />
+    <xsd:complexType name="abstractmaporderType" />
+
+    <xsd:element name="maporder" type="maporderType" substitutionGroup="abstract-maporder" />
+    <xsd:complexType name="maporderType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractmaporderType">
+                <xsd:attribute name="parent-map" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Name of the parent map.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="child-map" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Name of the child map.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>

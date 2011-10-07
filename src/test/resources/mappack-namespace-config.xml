@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:mappack="http://www.mulesoft.org/schema/mule/mappack"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+    xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
+        http://www.mulesoft.org/schema/mule/mappack http://www.mulesoft.org/schema/mule/mappack/3.2/mule-mappack.xsd
+        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.2/mule-vm.xsd
+        ">
+
+    <flow name="nestedmapoutput">
+        <vm:inbound-endpoint path="nestedmapoutput.in"/>
+
+        <mappack:nested-map-transformer>
+            <mappack:mapvalue map-name="map1" map-key="key1" length="5" value="#[payload]"/>
+            <mappack:mapvalue map-name="map2" map-key="key2" length="6" value="#[payload]"/>
+            
+            <mappack:maporder parent-map="map2" child-map="map1" />
+        </mappack:nested-map-transformer>
+
+    </flow>
+
+</mule>
