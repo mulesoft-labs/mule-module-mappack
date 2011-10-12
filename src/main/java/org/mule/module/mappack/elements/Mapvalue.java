@@ -34,7 +34,7 @@ public class Mapvalue
     {
         Object result = evaluate(value, message, muleContext, expressionManager, patternInfo);
 
-        if (StringUtils.isEmpty((String) result) && !StringUtils.isEmpty(defaultValue))
+        if (((notString && result == null) || (!notString && StringUtils.isEmpty((String) result))) && !StringUtils.isEmpty(defaultValue))
         {
             result = evaluate(defaultValue, message, muleContext, expressionManager, patternInfo);
         }
