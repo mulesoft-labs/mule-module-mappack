@@ -62,23 +62,27 @@ public class NestedMapTransformer extends AbstractMessageTransformer
         for (int i = 0; i < mapvalues.size(); i++)
         {
             Mapvalue mapvalue = mapvalues.get(i);
-            String value = mapvalue.evaluateMapValue(message,  muleContext, expressionManager, patternInfo);
+            Object value = mapvalue.evaluateMapValue(message,  muleContext, expressionManager, patternInfo);
             String mapkey = mapvalue.getMapKey();
             String mapname;
             
-            if (mapvalue.getLength() != null && trimToLength)
+            if (mapvalue.getLength() != null && trimToLength && !mapvalue.getNotString())
             {
+            	String svalue = (String) value;
                 int length = Integer.parseInt(mapvalue.getLength());
-                int vlen = value.length();
+                int vlen = svalue.length();
                 if (vlen < length)
                 	length = vlen;
-                value = value.substring(0, length);
+                value = svalue.substring(0, length);
             }
             
             // check to see if a space is needed
-            if (addSpace && value.length() == 0)
+            if (addSpace && !mapvalue.getNotString())
             {
-            	value = " ";
+            	String svalue = (String) value;
+            	if (svalue.length() == 0) {
+            		value = " ";
+            	}
             }
             
             mapname = (singleMap) ? null : mapvalue.getMapName();
@@ -229,7 +233,7 @@ public class NestedMapTransformer extends AbstractMessageTransformer
 	}
     
     @SuppressWarnings(value="unchecked")
-    private void putValue(String mapName, String mapKey, String value, HashMap<String, HashMap> tempmap) {
+    private void putValue(String mapName, String mapKey, Object value, HashMap<String, HashMap> tempmap) {
     	HashMap<String, Object> map = (HashMap<String, Object>) tempmap.get(mapName);
     	if (map == null) {
     		map = new HashMap<String, Object>();

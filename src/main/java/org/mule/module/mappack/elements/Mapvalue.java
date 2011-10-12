@@ -27,14 +27,14 @@ public class Mapvalue
     public String length;
     public String value;
     public String defaultValue;
+    public Boolean notString = false;
 
-
-    public String evaluateMapValue(MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
+    public Object evaluateMapValue(MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
                                  TemplateParser.PatternInfo patternInfo) throws TransformerException
     {
-        String result = evaluate(value, message, muleContext, expressionManager, patternInfo);
+        Object result = evaluate(value, message, muleContext, expressionManager, patternInfo);
 
-        if (StringUtils.isEmpty(result) && !StringUtils.isEmpty(defaultValue))
+        if (StringUtils.isEmpty((String) result) && !StringUtils.isEmpty(defaultValue))
         {
             result = evaluate(defaultValue, message, muleContext, expressionManager, patternInfo);
         }
@@ -42,7 +42,7 @@ public class Mapvalue
         return result;
     }
 
-    protected String evaluate(String expression, MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
+    protected Object evaluate(String expression, MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
                                  TemplateParser.PatternInfo patternInfo) throws TransformerException
     {
         Object evaluatedValue;
@@ -60,7 +60,7 @@ public class Mapvalue
             evaluatedValue = expressionManager.parse(expression, message);
         }
 
-        String result;
+        String result = null;
 
         // Get the value into a string since that is the final output.
         if (evaluatedValue == null)
@@ -71,7 +71,7 @@ public class Mapvalue
         {
             result = (String) evaluatedValue;
         }
-        else
+        else if (!notString)
         {
             Transformer transformer = muleContext.getRegistry().lookupTransformer(DataTypeFactory.create(evaluatedValue.getClass()),
                     DataType.STRING_DATA_TYPE);
@@ -85,8 +85,13 @@ public class Mapvalue
                 throw new TransformerException(MapPackMessages.notAbleToConvertToString(mapKey));
             }
         }
-
-        return result.trim();
+        
+        if (notString) {
+        	return evaluatedValue;
+        } else {
+        	return result.trim();
+        }
+                
     }
 
     public String getValue()
@@ -127,6 +132,16 @@ public class Mapvalue
     public void setMapName(String mapName)
     {
         this.mapName = mapName;
+    }
+
+    public Boolean getNotString()
+    {
+        return notString;
+    }
+
+    public void setNotString(Boolean notString)
+    {
+        this.notString = notString;
     }
 
 }

@@ -29,7 +29,7 @@ public class MapPackToListTestCase extends FunctionalTestCase {
 		assertFalse(result.getPayload() instanceof NullPayload);
 		
 		assertEquals(
-				"[{map3={map2={key4=12/31/2011, key3=data test-1, map4={key5=data test-2}}}, map1={key2=data, key1=data}}]",
+				"[{key2=data, key1=data, map3={map2={key4=12/31/2011, key3=data test-1, map4={key5=data test-2}}}}]",
 				result.getPayloadAsString());
 	}
 

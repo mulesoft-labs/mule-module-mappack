@@ -29,7 +29,7 @@ public class DateTimeMapValue extends Mapvalue
     @Override
     public String evaluateMapValue(MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager, TemplateParser.PatternInfo patternInfo) throws TransformerException
     {
-        String value = super.evaluateMapValue(message, muleContext, expressionManager, patternInfo);
+        String value = (String) super.evaluateMapValue(message, muleContext, expressionManager, patternInfo);
 
         DateFormat dfIn = new SimpleDateFormat(dateFormatIn);
         Date dateIn = null;

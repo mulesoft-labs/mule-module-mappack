@@ -19,5 +19,6 @@ public class MapValueDefinitionParser extends ChildDefinitionParser
         this.addAlias("map-name", "mapName");
         this.addAlias("map-key", "mapKey");
         this.addAlias("default-value", "defaultValue");
+        this.addAlias("not-string", "notString");
     }
 }

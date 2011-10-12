@@ -24,7 +24,7 @@ public class TransformMapValue extends Mapvalue
     private String transformerName;
 
     @Override
-    public String evaluateMapValue(MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
+    public Object evaluateMapValue(MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
                                  TemplateParser.PatternInfo patternInfo) throws TransformerException
     {
         Transformer transformer = muleContext.getRegistry().lookupTransformer(transformerName);
@@ -34,7 +34,7 @@ public class TransformMapValue extends Mapvalue
             throw new TransformerException(MapPackMessages.noTransformerFound(transformerName));
         }
 
-        String value = super.evaluateMapValue(message, muleContext, expressionManager, patternInfo);
+        Object value = super.evaluateMapValue(message, muleContext, expressionManager, patternInfo);
 
         // Don't do the transformation if the original value was null since we will be doing the transformation
         // on the default value.
@@ -47,7 +47,7 @@ public class TransformMapValue extends Mapvalue
             {
                 value = (String) result;
             }
-            else
+            else if (!notString)
             {
                 Transformer stringTransformer = muleContext.getRegistry().lookupTransformer(DataTypeFactory.create(result.getClass()),
                         DataType.STRING_DATA_TYPE);
