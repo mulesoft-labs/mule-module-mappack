@@ -82,6 +82,14 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="to-object-list" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specifies if the output should be a list containing the map as object instead.
+                            By default this is false.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
                 <xsd:attribute name="skip-top" type="xsd:boolean" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>

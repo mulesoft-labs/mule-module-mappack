@@ -21,6 +21,7 @@ public class NestedMapDefinitionParser extends MessageProcessorDefinitionParser
         addAlias("add-space", "addSpace");
         addAlias("single-map", "singleMap");
         addAlias("to-list", "toList");
+        addAlias("to-object-list", "toObjectList");
         addAlias("skip-top", "skipTop");
     }
 }

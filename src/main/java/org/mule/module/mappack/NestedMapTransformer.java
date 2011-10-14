@@ -32,6 +32,7 @@ public class NestedMapTransformer extends AbstractMessageTransformer
     private Boolean addSpace = false;
     private Boolean singleMap = false;
     private Boolean toList = false;
+    private Boolean toObjectList = false;
     private Boolean skipTop = false;
 
     protected final TemplateParser.PatternInfo patternInfo = TemplateParser.createMuleStyleParser().getStyle();
@@ -117,9 +118,17 @@ public class NestedMapTransformer extends AbstractMessageTransformer
         }
         
         // Note: return is in an if-else block
-        if (toList) {
+        if (toList && !toObjectList) {
         	ArrayList<Map<String,Object>> outlist = new ArrayList<Map<String,Object>>();
         	outlist.add((Map) outmap);
+        	return outlist;
+        } else if (toObjectList)
+        {
+        	ArrayList<Object> outlist = new ArrayList<Object>();
+        	outlist.add((Object) outmap);
+        	
+        	System.out.println("OutList??\n" + outlist);
+        	
         	return outlist;
         } else 
         {
@@ -186,6 +195,16 @@ public class NestedMapTransformer extends AbstractMessageTransformer
     public void setToList(Boolean toList)
     {
     	this.toList = toList;
+    }
+    
+    public Boolean getToObjectList()
+    {
+    	return toObjectList;
+    }
+    
+    public void setToObjectList(Boolean toObjectList)
+    {
+    	this.toObjectList = toObjectList;
     }
     
     public Boolean getSkipTop()
