@@ -17,8 +17,8 @@
         <!-- Tools properties -->
         <eclipsePluginVersion>2.5</eclipsePluginVersion>
         <vmtype>org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType</vmtype>
-        <jdk5Name>J2SE-1.5</jdk5Name>
-        <jdk.version>1.5</jdk.version>
+        <jdk5Name>J2SE-1.6</jdk5Name>
+        <jdk.version>1.6</jdk.version>
     </properties>
 
     <build>
@@ -192,7 +192,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-scripting</artifactId>
-            <version>3.1.1</version>
+            <version>${mule.version}</version>
         </dependency>
     </dependencies>
 

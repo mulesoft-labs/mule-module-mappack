@@ -9,6 +9,11 @@
  */
 package org.mule.module.mappack;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.api.MuleMessage;
 import org.mule.api.expression.ExpressionManager;
 import org.mule.api.lifecycle.InitialisationException;
@@ -18,11 +23,6 @@ import org.mule.module.mappack.elements.Mapvalue;
 import org.mule.module.mappack.i18n.MapPackMessages;
 import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.util.TemplateParser;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class NestedMapTransformer extends AbstractMessageTransformer
 {
@@ -125,10 +125,7 @@ public class NestedMapTransformer extends AbstractMessageTransformer
         } else if (toObjectList)
         {
         	ArrayList<Object> outlist = new ArrayList<Object>();
-        	outlist.add((Object) outmap);
-        	
-        	System.out.println("OutList??\n" + outlist);
-        	
+        	outlist.add((Object) outmap);        	
         	return outlist;
         } else 
         {
