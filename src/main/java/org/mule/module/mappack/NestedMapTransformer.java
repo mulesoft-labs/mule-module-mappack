@@ -227,7 +227,7 @@ public class NestedMapTransformer extends AbstractMessageTransformer
 		
 		if (childmap == null)
 			// Still not found
-			throw new TransformerException(MapPackMessages.noChildDefined());
+			throw new TransformerException(MapPackMessages.noChildDefined(childName));
 		
 		if (parentName != null) {
 

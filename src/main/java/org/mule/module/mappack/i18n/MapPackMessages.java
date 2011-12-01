@@ -56,8 +56,8 @@ public class MapPackMessages extends MessageFactory
         return FACTORY.createMessage(BUNDLE_PATH, 8);
     }
 
-    public static Message noChildDefined()
+    public static Message noChildDefined(String childName)
     {
-        return FACTORY.createMessage(BUNDLE_PATH, 9);
+        return FACTORY.createMessage(BUNDLE_PATH, 9, childName);
     }
 }
