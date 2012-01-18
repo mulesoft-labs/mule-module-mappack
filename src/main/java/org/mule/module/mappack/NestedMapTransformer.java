@@ -48,7 +48,7 @@ public class NestedMapTransformer extends AbstractMessageTransformer
     }
 
     @Override
-    public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException
+    public synchronized Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException
     {
     	
         if (mapvalues == null || mapvalues.size() == 0)
