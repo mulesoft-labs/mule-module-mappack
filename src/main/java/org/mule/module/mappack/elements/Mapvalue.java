@@ -59,6 +59,7 @@ public class Mapvalue {
 						.evaluate(expression, message);
 			} catch (org.mule.api.expression.RequiredValueException rve) {
 				// make value optional
+				rve.printStackTrace();
 			}
 		} else {
 			evaluatedValue = expressionManager.parse(expression, message);
