@@ -20,128 +20,117 @@ import org.mule.transformer.types.DataTypeFactory;
 import org.mule.util.StringUtils;
 import org.mule.util.TemplateParser;
 
-public class Mapvalue
-{
-    public String mapKey = null;
-    public String mapName = null;
-    public String length;
-    public String value;
-    public String defaultValue;
-    public Boolean notString = false;
+public class Mapvalue {
+	public String mapKey = null;
+	public String mapName = null;
+	public String length;
+	public String value;
+	public String defaultValue;
+	public Boolean notString = false;
 
-    public Object evaluateMapValue(MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
-                                 TemplateParser.PatternInfo patternInfo) throws TransformerException
-    {
-        Object result = evaluate(value, message, muleContext, expressionManager, patternInfo);
+	public Object evaluateMapValue(MuleMessage message,
+			MuleContext muleContext, ExpressionManager expressionManager,
+			TemplateParser.PatternInfo patternInfo) throws TransformerException {
+		Object result = evaluate(value, message, muleContext,
+				expressionManager, patternInfo);
 
-        if (((notString && result == null) || (!notString && StringUtils.isEmpty((String) result))) && !StringUtils.isEmpty(defaultValue))
-        {
-            result = evaluate(defaultValue, message, muleContext, expressionManager, patternInfo);
-        }
+		if (((notString && result == null) || (!notString && StringUtils
+				.isEmpty((String) result)))
+				&& !StringUtils.isEmpty(defaultValue)) {
+			result = evaluate(defaultValue, message, muleContext,
+					expressionManager, patternInfo);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    protected Object evaluate(String expression, MuleMessage message, MuleContext muleContext, ExpressionManager expressionManager,
-                                 TemplateParser.PatternInfo patternInfo) throws TransformerException
-    {
-        Object evaluatedValue;
+	protected Object evaluate(String expression, MuleMessage message,
+			MuleContext muleContext, ExpressionManager expressionManager,
+			TemplateParser.PatternInfo patternInfo) throws TransformerException {
+		Object evaluatedValue = null;
 
-        // If string contains is a single expression then evaluate otherwise
-        // parse. We can't use parse() always because that will convert
-        // everything to a string
-        if (expression.startsWith(patternInfo.getPrefix())
-                && expression.endsWith(patternInfo.getSuffix()))
-        {
-            evaluatedValue = expressionManager.evaluate(expression, message);
-        }
-        else
-        {
-            evaluatedValue = expressionManager.parse(expression, message);
-        }
+		// If string contains is a single expression then evaluate otherwise
+		// parse. We can't use parse() always because that will convert
+		// everything to a string
+		if (expression.startsWith(patternInfo.getPrefix())
+				&& expression.endsWith(patternInfo.getSuffix())) {
+			try {
+				evaluatedValue = expressionManager
+						.evaluate(expression, message);
+			} catch (org.mule.api.expression.RequiredValueException rve) {
+				// make value optional
+			}
+		} else {
+			evaluatedValue = expressionManager.parse(expression, message);
+		}
 
-        String result = null;
+		String result = null;
 
-        // Get the value into a string since that is the final output.
-        if (evaluatedValue == null)
-        {
-            result = "";
-        }
-        else if (evaluatedValue instanceof String)
-        {
-            result = (String) evaluatedValue;
-        }
-        else if (!notString)
-        {
-            Transformer transformer = muleContext.getRegistry().lookupTransformer(DataTypeFactory.create(evaluatedValue.getClass()),
-                    DataType.STRING_DATA_TYPE);
+		// Get the value into a string since that is the final output.
+		if (evaluatedValue == null) {
+			result = "";
+		} else if (evaluatedValue instanceof String) {
+			result = (String) evaluatedValue;
+		} else if (!notString) {
+			Transformer transformer = muleContext.getRegistry()
+					.lookupTransformer(
+							DataTypeFactory.create(evaluatedValue.getClass()),
+							DataType.STRING_DATA_TYPE);
 
-            if (transformer != null)
-            {
-                result = (String) transformer.transform(evaluatedValue);
-            }
-            else
-            {
-                throw new TransformerException(MapPackMessages.notAbleToConvertToString(mapKey));
-            }
-        }
-        
-        if (notString) {
-        	return evaluatedValue;
-        } else {
-        	return result.trim();
-        }
-                
-    }
+			if (transformer != null) {
+				result = (String) transformer.transform(evaluatedValue);
+			} else {
+				throw new TransformerException(
+						MapPackMessages.notAbleToConvertToString(mapKey));
+			}
+		}
 
-    public String getValue()
-    {
-        return value;
-    }
+		if (notString) {
+			return evaluatedValue;
+		} else {
+			return result.trim();
+		}
 
-    public void setValue(String value)
-    {
-        this.value = value;
-    }
+	}
 
-    public String getLength()
-    {
-        return length;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public void setLength(String length)
-    {
-        this.length = length;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    public String getMapKey()
-    {
-        return mapKey;
-    }
+	public String getLength() {
+		return length;
+	}
 
-    public void setMapKey(String mapKey)
-    {
-        this.mapKey = mapKey;
-    }
+	public void setLength(String length) {
+		this.length = length;
+	}
 
-    public String getMapName()
-    {
-        return mapName;
-    }
+	public String getMapKey() {
+		return mapKey;
+	}
 
-    public void setMapName(String mapName)
-    {
-        this.mapName = mapName;
-    }
+	public void setMapKey(String mapKey) {
+		this.mapKey = mapKey;
+	}
 
-    public Boolean getNotString()
-    {
-        return notString;
-    }
+	public String getMapName() {
+		return mapName;
+	}
 
-    public void setNotString(Boolean notString)
-    {
-        this.notString = notString;
-    }
+	public void setMapName(String mapName) {
+		this.mapName = mapName;
+	}
+
+	public Boolean getNotString() {
+		return notString;
+	}
+
+	public void setNotString(Boolean notString) {
+		this.notString = notString;
+	}
 
 }

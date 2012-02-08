@@ -24,237 +24,226 @@ import org.mule.module.mappack.i18n.MapPackMessages;
 import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.util.TemplateParser;
 
-public class NestedMapTransformer extends AbstractMessageTransformer
-{
-    private List<Mapvalue> mapvalues;
-    private List<Maporder> maporders;
-    private Boolean trimToLength = false;
-    private Boolean addSpace = false;
-    private Boolean singleMap = false;
-    private Boolean toList = false;
-    private Boolean toObjectList = false;
-    private Boolean skipTop = false;
+public class NestedMapTransformer extends AbstractMessageTransformer {
+	private List<Mapvalue> mapvalues;
+	private List<Maporder> maporders;
+	private Boolean trimToLength = false;
+	private Boolean addSpace = false;
+	private Boolean singleMap = false;
+	private Boolean toList = false;
+	private Boolean toObjectList = false;
+	private Boolean skipTop = false;
 
-    protected final TemplateParser.PatternInfo patternInfo = TemplateParser.createMuleStyleParser().getStyle();
+	protected final TemplateParser.PatternInfo patternInfo = TemplateParser
+			.createMuleStyleParser().getStyle();
 
-    protected ExpressionManager expressionManager;
+	protected ExpressionManager expressionManager;
 
-    @Override
-    public void initialise() throws InitialisationException
-    {
-        super.initialise();
+	@Override
+	public void initialise() throws InitialisationException {
+		super.initialise();
 
-        expressionManager = muleContext.getExpressionManager();
-    }
+		expressionManager = muleContext.getExpressionManager();
+	}
 
-    @Override
-    public synchronized Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException
-    {
-    	
-        if (mapvalues == null || mapvalues.size() == 0)
-        {
-            throw new TransformerException(MapPackMessages.noMapValueNameDefined());
-        }
+	@Override
+	public synchronized Object transformMessage(MuleMessage message,
+			String outputEncoding) throws TransformerException {
 
-    	// create a new tracking map everytime
-        HashMap<String, HashMap> tempmap = new HashMap<String, HashMap>();
-        HashMap<String, HashMap> outmap;
-        
-        for (int i = 0; i < mapvalues.size(); i++)
-        {
-            Mapvalue mapvalue = mapvalues.get(i);
-            Object value = mapvalue.evaluateMapValue(message,  muleContext, expressionManager, patternInfo);
-            String mapkey = mapvalue.getMapKey();
-            String mapname;
-            
-            if (mapvalue.getLength() != null && trimToLength && !mapvalue.getNotString())
-            {
-            	String svalue = (String) value;
-                int length = Integer.parseInt(mapvalue.getLength());
-                int vlen = svalue.length();
-                if (vlen < length)
-                	length = vlen;
-                value = svalue.substring(0, length);
-            }
-            
-            // check to see if a space is needed
-            if (addSpace && !mapvalue.getNotString())
-            {
-            	String svalue = (String) value;
-            	if (svalue.length() == 0) {
-            		value = " ";
-            	}
-            }
-            
-            mapname = (singleMap) ? null : mapvalue.getMapName();
-            
-            putValue(mapname, mapkey, value, tempmap);
+		if (mapvalues == null || mapvalues.size() == 0) {
+			throw new TransformerException(
+					MapPackMessages.noMapValueNameDefined());
+		}
 
-        }
-        
-        if (maporders != null && !singleMap) {
-        	outmap = new HashMap<String, HashMap>();
-        	for (int i = 0; i < maporders.size(); i++) {
-        		Maporder maporder = maporders.get(i);
-        		constructNestedMap(maporder.getParentMap(), maporder.getChildMap(), tempmap, outmap);
-        	}
-        }
-        else {
-        	if (singleMap) {
-        		outmap = tempmap.remove(null);
-        	}
-        	else {
-        		// default map
-        		outmap = tempmap;        		
-        	}
-        }
-        
-        if (!skipTop) {
-        	// Move over the ones initially mapped to null
-        	HashMap<String, HashMap> nullmap = tempmap.get(null);
-        	if (nullmap != null) {
-        		outmap.putAll(nullmap);
-        	}
-        }
-        
-        // Note: return is in an if-else block
-        if (toList && !toObjectList) {
-        	ArrayList<Map<String,Object>> outlist = new ArrayList<Map<String,Object>>();
-        	outlist.add((Map) outmap);
-        	return outlist;
-        } else if (toObjectList)
-        {
-        	ArrayList<Object> outlist = new ArrayList<Object>();
-        	outlist.add((Object) outmap);        	
-        	return outlist;
-        } else 
-        {
-        	return outmap;
-        }
-    }
+		// create a new tracking map everytime
+		HashMap<String, HashMap> tempmap = new HashMap<String, HashMap>();
+		HashMap<String, HashMap> outmap;
 
+		for (int i = 0; i < mapvalues.size(); i++) {
+			Mapvalue mapvalue = mapvalues.get(i);
+			Object value = mapvalue.evaluateMapValue(message, muleContext,
+					expressionManager, patternInfo);
+			String mapkey = mapvalue.getMapKey();
+			String mapname;
 
-    public List<Maporder> getMaporders()
-    {
-        return maporders;
-    }
+			if (mapvalue.getLength() != null && trimToLength
+					&& !mapvalue.getNotString()) {
+				String svalue = (String) value;
+				int length = Integer.parseInt(mapvalue.getLength());
+				int vlen = svalue.length();
+				if (vlen < length)
+					length = vlen;
+				value = svalue.substring(0, length);
+			}
 
-    public void setMaporders(List<Maporder> maporders)
-    {
-        this.maporders = maporders;
-    }
+			// check to see if a space is needed
+			if (addSpace && !mapvalue.getNotString()) {
+				String svalue = (String) value;
+				if (svalue.length() == 0) {
+					value = " ";
+				}
+			}
 
-    public List<Mapvalue> getMapvalues()
-    {
-        return mapvalues;
-    }
+			mapname = (singleMap) ? null : mapvalue.getMapName();
 
-    public void setMapvalues(List<Mapvalue> mapvalues)
-    {
-        this.mapvalues = mapvalues;
-    }
+			putValue(mapname, mapkey, value, tempmap);
 
-    public Boolean getTrimToLength()
-    {
-        return trimToLength;
-    }
+		}
 
-    public void setTrimToLength(Boolean trimToLength)
-    {
-        this.trimToLength = trimToLength;
-    }
-    
-    public Boolean getAddSpace()
-    {
-    	return addSpace;
-    }
-    
-    public void setAddSpace(Boolean addSpace)
-    {
-    	this.addSpace = addSpace;
-    }
-    
-    public Boolean getSingleMap()
-    {
-    	return singleMap;
-    }
-    
-    public void setSingleMap(Boolean singleMap)
-    {
-    	this.singleMap = singleMap;
-    }
-    
-    public Boolean getToList()
-    {
-    	return toList;
-    }
-    
-    public void setToList(Boolean toList)
-    {
-    	this.toList = toList;
-    }
-    
-    public Boolean getToObjectList()
-    {
-    	return toObjectList;
-    }
-    
-    public void setToObjectList(Boolean toObjectList)
-    {
-    	this.toObjectList = toObjectList;
-    }
-    
-    public Boolean getSkipTop()
-    {
-    	return skipTop;
-    }
-    
-    public void setSkipTop(Boolean skipTop)
-    {
-    	this.skipTop = skipTop;
-    }
-    
+		if (maporders != null && !singleMap) {
+			outmap = new HashMap<String, HashMap>();
+			for (int i = 0; i < maporders.size(); i++) {
+				Maporder maporder = maporders.get(i);
+				constructNestedMap(maporder.getParentMap(),
+						maporder.getChildMap(), tempmap, outmap);
+			}
+		} else {
+			if (singleMap) {
+				outmap = tempmap.remove(null);
+			} else {
+				// default map
+				outmap = tempmap;
+			}
+		}
+
+		if (!skipTop) {
+			// Move over the ones initially mapped to null
+			HashMap<String, HashMap> nullmap = tempmap.get(null);
+			if (nullmap != null) {
+				outmap.putAll(nullmap);
+			}
+		}
+
+		// Note: return is in an if-else block
+		if (toList && !toObjectList) {
+			ArrayList<Map<String, Object>> outlist = new ArrayList<Map<String, Object>>();
+			outlist.add((Map) outmap);
+			return outlist;
+		} else if (toObjectList) {
+			ArrayList<Object> outlist = new ArrayList<Object>();
+			outlist.add((Object) outmap);
+			return outlist;
+		} else {
+			return outmap;
+		}
+	}
+
+	public List<Maporder> getMaporders() {
+		return maporders;
+	}
+
+	public void setMaporders(List<Maporder> maporders) {
+		this.maporders = maporders;
+	}
+
+	public List<Mapvalue> getMapvalues() {
+		return mapvalues;
+	}
+
+	public void setMapvalues(List<Mapvalue> mapvalues) {
+		this.mapvalues = mapvalues;
+	}
+
+	public Boolean getTrimToLength() {
+		return trimToLength;
+	}
+
+	public void setTrimToLength(Boolean trimToLength) {
+		this.trimToLength = trimToLength;
+	}
+
+	public Boolean getAddSpace() {
+		return addSpace;
+	}
+
+	public void setAddSpace(Boolean addSpace) {
+		this.addSpace = addSpace;
+	}
+
+	public Boolean getSingleMap() {
+		return singleMap;
+	}
+
+	public void setSingleMap(Boolean singleMap) {
+		this.singleMap = singleMap;
+	}
+
+	public Boolean getToList() {
+		return toList;
+	}
+
+	public void setToList(Boolean toList) {
+		this.toList = toList;
+	}
+
+	public Boolean getToObjectList() {
+		return toObjectList;
+	}
+
+	public void setToObjectList(Boolean toObjectList) {
+		this.toObjectList = toObjectList;
+	}
+
+	public Boolean getSkipTop() {
+		return skipTop;
+	}
+
+	public void setSkipTop(Boolean skipTop) {
+		this.skipTop = skipTop;
+	}
+
 	@SuppressWarnings(value = "unchecked")
-	private void constructNestedMap(String parentName, String childName, HashMap<String, HashMap> tempmap, HashMap<String, HashMap> outmap)
+	private void constructNestedMap(String parentName, String childName,
+			HashMap<String, HashMap> tempmap, HashMap<String, HashMap> outmap)
 			throws TransformerException {
-		
+
 		HashMap<String, HashMap> childmap = (HashMap<String, HashMap>) tempmap
 				.get(childName);
-		
+
 		if (childmap == null)
 			// Maybe created during the ordering part?
 			childmap = (HashMap<String, HashMap>) outmap.get(childName);
-		
+
 		if (childmap == null)
 			// Still not found
-			throw new TransformerException(MapPackMessages.noChildDefined(childName));
-		
+			throw new TransformerException(
+					MapPackMessages.noChildDefined(childName));
+
 		if (parentName != null) {
 
 			// Handling parent map
 			HashMap<String, HashMap> parentmap = (HashMap<String, HashMap>) outmap
-					.remove(parentName); // Remove since a map can be successively nested
+					.remove(parentName); // Remove since a map can be
+											// successively nested
 			if (parentmap == null)
-				parentmap = (HashMap<String, HashMap>) tempmap.get(parentName); // Maybe not yet touched
+				parentmap = (HashMap<String, HashMap>) tempmap.get(parentName); // Maybe
+																				// not
+																				// yet
+																				// touched
 			if (parentmap == null)
 				parentmap = new HashMap<String, HashMap>();
 			// put map
 			parentmap.put(childName, childmap);
 			outmap.remove(childName); // to prevent dupe in the output
 			outmap.put(parentName, parentmap);
-		}
-		else {
+		} else {
 			outmap.put(childName, childmap);
 		}
 	}
-    
-    @SuppressWarnings(value="unchecked")
-    private void putValue(String mapName, String mapKey, Object value, HashMap<String, HashMap> tempmap) {
-    	HashMap<String, Object> map = (HashMap<String, Object>) tempmap.get(mapName);
-    	if (map == null) {
-    		map = new HashMap<String, Object>();
-    	}
-    	map.put(mapKey, value);
-    	tempmap.put(mapName, map);
-    }
+
+	@SuppressWarnings(value = "unchecked")
+	private void putValue(String mapName, String mapKey, Object value,
+			HashMap<String, HashMap> tempmap) {
+
+		HashMap<String, Object> map = (HashMap<String, Object>) tempmap
+				.get(mapName);
+
+		if (value != null) {
+			if (map == null) {
+				map = new HashMap<String, Object>();
+			}
+			map.put(mapKey, value);
+			tempmap.put(mapName, map);
+		}
+	}
 }
